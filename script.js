@@ -1,51 +1,51 @@
-const questions = [
-    "Is your birthday in the first half of the year (January-June)?",
-    "Is your birthday in an odd-numbered month?",
-    "Is your birthday on or after the 16th of the month?",
-    "Is your birth month in the first half of its respective half-year?",
-    "Is your birthday in the last week of the month (24th onwards)?"
-];
-
-let currentQuestion = 0;
-let answers = [];
-
-const questionElement = document.getElementById('question');
+const question = document.getElementById('question');
 const yesBtn = document.getElementById('yes-btn');
 const noBtn = document.getElementById('no-btn');
-const questionContainer = document.getElementById('question-container');
-const resultContainer = document.getElementById('result-container');
-const resultElement = document.getElementById('result');
+const result = document.getElementById('result');
 const restartBtn = document.getElementById('restart-btn');
 const progressBar = document.getElementById('progress');
+const questionContainer = document.getElementById('question-container');
+const resultContainer = document.getElementById('result-container');
+const currentQuestionSpan = document.getElementById('current-question');
+const totalQuestionsSpan = document.getElementById('total-questions');
 
-function showQuestion() {
-    questionElement.textContent = questions[currentQuestion];
-    updateProgress();
-    fadeIn(questionContainer);
+let start = 1;
+let end = 365;
+let mid;
+let guessCount = 0;
+const maxGuesses = 10;
+
+function updateQuestion() {
+    mid = Math.floor((start + end) / 2);
+    let midDate = dateFromDayOfYear(mid);
+    question.textContent = `Is your birthday before or on ${midDate}?`;
+    questionContainer.classList.add('active');
+    guessCount++;
+    currentQuestionSpan.textContent = guessCount;
+    updateProgressBar();
 }
 
-function processAnswer(answer) {
-    answers.push(answer);
-    currentQuestion++;
-
-    if (currentQuestion < questions.length) {
-        fadeOut(questionContainer, showQuestion);
-    } else {
-        fadeOut(questionContainer, showResult);
-    }
+function updateProgressBar() {
+    const progress = (guessCount / maxGuesses) * 100;
+    progressBar.style.width = `${Math.min(progress, 100)}%`;
 }
 
-function showResult() {
-    const [guessedMonth, guessedDay] = guessBirthday();
-    
-    resultElement.innerHTML = `
-        <p>Based on your answers, we guess your birthday is around:</p>
-        <h2>${guessedMonth} ${guessedDay}</h2>
-        <p>How close were we? Let us know!</p>
-    `;
+function dateFromDayOfYear(dayOfYear) {
+    const date = new Date(new Date().getFullYear(), 0);
+    date.setDate(dayOfYear);
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+}
+
+function gameOver(message) {
+    result.innerHTML = message;
+    questionContainer.style.display = 'none';
     resultContainer.style.display = 'block';
-    fadeIn(resultContainer);
-    triggerConfetti();
+    resultContainer.classList.add('active');
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
 }
 
 function guessBirthday() {
