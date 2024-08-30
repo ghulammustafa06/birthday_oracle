@@ -62,7 +62,31 @@ function guessMonth() {
     return possibleMonths[Math.floor(Math.random() * possibleMonths.length)];
 }
 
+function guessDay() {
+    let start, end;
+    
+    if (answers[3]) {
+        start = 1;
+        end = 15;
+    } else {
+        start = 16;
+        end = 30;
+    }
+    
+    if (answers[2]) {
+        return 2 * Math.floor(Math.random() * ((end - start + 1) / 2)) + start;
+    } else {
+        return 2 * Math.floor(Math.random() * ((end - start + 1) / 2)) + start + 1;
+    }
+}
 
+function restart() {
+    currentQuestion = 0;
+    answers = [];
+    questionContainer.style.display = 'block';
+    resultContainer.style.display = 'none';
+    showQuestion();
+}
 
 yesBtn.addEventListener('click', () => processAnswer(true));
 noBtn.addEventListener('click', () => processAnswer(false));
