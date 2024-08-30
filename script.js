@@ -1,0 +1,71 @@
+const questions = [
+    "Is your birthday in the first half of the year (January-June)?",
+    "Is your birthday in an odd-numbered month?",
+    "Is your birthday on an even-numbered day?",
+    "Is your birthday in the first half of the month (1st-15th)?",
+    "Is your birth month in the first half of its respective half-year?"
+];
+
+let currentQuestion = 0;
+let answers = [];
+
+const questionElement = document.getElementById('question');
+const yesBtn = document.getElementById('yes-btn');
+const noBtn = document.getElementById('no-btn');
+const questionContainer = document.getElementById('question-container');
+const resultContainer = document.getElementById('result-container');
+const resultElement = document.getElementById('result');
+const restartBtn = document.getElementById('restart-btn');
+
+function showQuestion() {
+    questionElement.textContent = questions[currentQuestion];
+}
+
+function processAnswer(answer) {
+    answers.push(answer);
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    questionContainer.style.display = 'none';
+    resultContainer.style.display = 'block';
+    
+    const guessedMonth = guessMonth();
+    const guessedDay = guessDay();
+    
+    resultElement.textContent = `We guess your birthday is around ${guessedMonth} ${guessedDay}!`;
+}
+
+function guessMonth() {
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    
+    let possibleMonths = [...months];
+    
+    if (answers[0]) possibleMonths = possibleMonths.slice(0, 6);
+    else possibleMonths = possibleMonths.slice(6);
+    
+    if (answers[1]) possibleMonths = possibleMonths.filter((_, index) => index % 2 === 0);
+    else possibleMonths = possibleMonths.filter((_, index) => index % 2 === 1);
+    
+    if (answers[4]) possibleMonths = [possibleMonths[0], possibleMonths[1]];
+    else possibleMonths = [possibleMonths[2], possibleMonths[3]];
+    
+    return possibleMonths[Math.floor(Math.random() * possibleMonths.length)];
+}
+
+
+
+yesBtn.addEventListener('click', () => processAnswer(true));
+noBtn.addEventListener('click', () => processAnswer(false));
+restartBtn.addEventListener('click', restart);
+
+showQuestion();
