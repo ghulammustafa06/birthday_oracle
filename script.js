@@ -16,9 +16,12 @@ const questionContainer = document.getElementById('question-container');
 const resultContainer = document.getElementById('result-container');
 const resultElement = document.getElementById('result');
 const restartBtn = document.getElementById('restart-btn');
+const progressBar = document.getElementById('progress');
 
 function showQuestion() {
     questionElement.textContent = questions[currentQuestion];
+    updateProgress();
+    fadeIn(questionContainer);
 }
 
 function processAnswer(answer) {
@@ -26,20 +29,20 @@ function processAnswer(answer) {
     currentQuestion++;
 
     if (currentQuestion < questions.length) {
-        showQuestion();
+        fadeOut(questionContainer, showQuestion);
     } else {
-        showResult();
+        fadeOut(questionContainer, showResult);
     }
 }
 
 function showResult() {
-    questionContainer.style.display = 'none';
-    resultContainer.style.display = 'block';
-    
     const guessedMonth = guessMonth();
     const guessedDay = guessDay();
     
     resultElement.textContent = `We guess your birthday is around ${guessedMonth} ${guessedDay}!`;
+    resultContainer.style.display = 'block';
+    fadeIn(resultContainer);
+    triggerConfetti();
 }
 
 function guessMonth() {
@@ -83,9 +86,33 @@ function guessDay() {
 function restart() {
     currentQuestion = 0;
     answers = [];
-    questionContainer.style.display = 'block';
-    resultContainer.style.display = 'none';
-    showQuestion();
+    fadeOut(resultContainer, () => {
+        resultContainer.style.display = 'none';
+        questionContainer.style.display = 'block';
+        showQuestion();
+    });
+}
+
+function updateProgress() {
+    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    progressBar.style.width = `${progress}%`;
+}
+
+function fadeIn(element) {
+    element.classList.add('active');
+}
+
+function fadeOut(element, callback) {
+    element.classList.remove('active');
+    setTimeout(callback, 500);
+}
+
+function triggerConfetti() {
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
 }
 
 yesBtn.addEventListener('click', () => processAnswer(true));

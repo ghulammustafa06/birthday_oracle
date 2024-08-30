@@ -4,22 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BirthdayOracle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
+        <div class="birthday-icon floating">🎂</div>
         <h1>BirthdayOracle</h1>
         <p>Let the magic unfold as we guess your birthday!</p>
-        <div id="question-container">
+        <div id="question-container" class="fade-in">
             <p id="question"></p>
             <button id="yes-btn">Yes</button>
             <button id="no-btn">No</button>
         </div>
-        <div id="result-container" style="display: none;">
+        <div id="result-container" class="fade-in" style="display: none;">
             <p id="result"></p>
             <button id="restart-btn">Try Again</button>
         </div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
