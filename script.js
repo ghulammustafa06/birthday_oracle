@@ -1,9 +1,9 @@
 const questions = [
     "Is your birthday in the first half of the year (January-June)?",
     "Is your birthday in an odd-numbered month?",
-    "Is your birthday on an even-numbered day?",
-    "Is your birthday in the first half of the month (1st-15th)?",
-    "Is your birth month in the first half of its respective half-year?"
+    "Is your birthday on or after the 16th of the month?",
+    "Is your birth month in the first half of its respective half-year?",
+    "Is your birthday in the last week of the month (24th onwards)?"
 ];
 
 let currentQuestion = 0;
@@ -36,16 +36,19 @@ function processAnswer(answer) {
 }
 
 function showResult() {
-    const guessedMonth = guessMonth();
-    const guessedDay = guessDay();
+    const [guessedMonth, guessedDay] = guessBirthday();
     
-    resultElement.textContent = `We guess your birthday is around ${guessedMonth} ${guessedDay}!`;
+    resultElement.innerHTML = `
+        <p>Based on your answers, we guess your birthday is around:</p>
+        <h2>${guessedMonth} ${guessedDay}</h2>
+        <p>How close were we? Let us know!</p>
+    `;
     resultContainer.style.display = 'block';
     fadeIn(resultContainer);
     triggerConfetti();
 }
 
-function guessMonth() {
+function guessBirthday() {
     const months = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -53,34 +56,38 @@ function guessMonth() {
     
     let possibleMonths = [...months];
     
-    if (answers[0]) possibleMonths = possibleMonths.slice(0, 6);
-    else possibleMonths = possibleMonths.slice(6);
+    if (answers[0]) {
+        possibleMonths = possibleMonths.slice(0, 6);
+    } else {
+        possibleMonths = possibleMonths.slice(6);
+    }
     
-    if (answers[1]) possibleMonths = possibleMonths.filter((_, index) => index % 2 === 0);
-    else possibleMonths = possibleMonths.filter((_, index) => index % 2 === 1);
-    
-    if (answers[4]) possibleMonths = [possibleMonths[0], possibleMonths[1]];
-    else possibleMonths = [possibleMonths[2], possibleMonths[3]];
-    
-    return possibleMonths[Math.floor(Math.random() * possibleMonths.length)];
-}
-
-function guessDay() {
-    let start, end;
+    if (answers[1]) {
+        possibleMonths = possibleMonths.filter((_, index) => index % 2 === 0);
+    } else {
+        possibleMonths = possibleMonths.filter((_, index) => index % 2 === 1);
+    }
     
     if (answers[3]) {
-        start = 1;
-        end = 15;
+        possibleMonths = [possibleMonths[0], possibleMonths[1]];
     } else {
-        start = 16;
-        end = 30;
+        possibleMonths = [possibleMonths[2]];
     }
     
-    if (answers[2]) {
-        return 2 * Math.floor(Math.random() * ((end - start + 1) / 2)) + start;
+    const guessedMonth = possibleMonths[Math.floor(Math.random() * possibleMonths.length)];
+    
+    let startDay, endDay;
+    if (answers[2]) { 
+        startDay = 16;
+        endDay = answers[4] ? 31 : 23; 
     } else {
-        return 2 * Math.floor(Math.random() * ((end - start + 1) / 2)) + start + 1;
+        startDay = 1;
+        endDay = 15;
     }
+    
+    const guessedDay = Math.floor(Math.random() * (endDay - startDay + 1)) + startDay;
+    
+    return [guessedMonth, guessedDay];
 }
 
 function restart() {
@@ -118,5 +125,13 @@ function triggerConfetti() {
 yesBtn.addEventListener('click', () => processAnswer(true));
 noBtn.addEventListener('click', () => processAnswer(false));
 restartBtn.addEventListener('click', restart);
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'y' || event.key === 'Y') {
+        yesBtn.click();
+    } else if (event.key === 'n' || event.key === 'N') {
+        noBtn.click();
+    }
+});
 
 showQuestion();

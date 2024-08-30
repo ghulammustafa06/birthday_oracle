@@ -14,15 +14,20 @@
         <p>Let the magic unfold as we guess your birthday!</p>
         <div id="question-container" class="fade-in">
             <p id="question"></p>
-            <button id="yes-btn">Yes</button>
-            <button id="no-btn">No</button>
+            <div class="button-container">
+                <button id="yes-btn">Yes (Y)</button>
+                <button id="no-btn">No (N)</button>
+            </div>
         </div>
         <div id="result-container" class="fade-in" style="display: none;">
-            <p id="result"></p>
+            <div id="result"></div>
             <button id="restart-btn">Try Again</button>
         </div>
         <div class="progress-bar">
             <div class="progress" id="progress"></div>
+        </div>
+        <div class="keyboard-hint">
+            <p>Tip: Use 'Y' for Yes and 'N' for No on your keyboard!</p>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
