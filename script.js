@@ -48,90 +48,50 @@ function gameOver(message) {
     });
 }
 
-function guessBirthday() {
-    const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-    
-    let possibleMonths = [...months];
-    
-    if (answers[0]) {
-        possibleMonths = possibleMonths.slice(0, 6);
-    } else {
-        possibleMonths = possibleMonths.slice(6);
-    }
-    
-    if (answers[1]) {
-        possibleMonths = possibleMonths.filter((_, index) => index % 2 === 0);
-    } else {
-        possibleMonths = possibleMonths.filter((_, index) => index % 2 === 1);
-    }
-    
-    if (answers[3]) {
-        possibleMonths = [possibleMonths[0], possibleMonths[1]];
-    } else {
-        possibleMonths = [possibleMonths[2]];
-    }
-    
-    const guessedMonth = possibleMonths[Math.floor(Math.random() * possibleMonths.length)];
-    
-    let startDay, endDay;
-    if (answers[2]) { 
-        startDay = 16;
-        endDay = answers[4] ? 31 : 23; 
-    } else {
-        startDay = 1;
-        endDay = 15;
-    }
-    
-    const guessedDay = Math.floor(Math.random() * (endDay - startDay + 1)) + startDay;
-    
-    return [guessedMonth, guessedDay];
-}
-
 function restart() {
-    currentQuestion = 0;
-    answers = [];
-    fadeOut(resultContainer, () => {
-        resultContainer.style.display = 'none';
-        questionContainer.style.display = 'block';
-        showQuestion();
-    });
+    start = 1;
+    end = 365;
+    guessCount = 0;
+    questionContainer.style.display = 'block';
+    resultContainer.style.display = 'none';
+    questionContainer.classList.remove('active');
+    resultContainer.classList.remove('active');
+    progressBar.style.width = '0%';
+    currentQuestionSpan.textContent = '1';
+    updateQuestion();
 }
 
-function updateProgress() {
-    const progress = ((currentQuestion + 1) / questions.length) * 100;
-    progressBar.style.width = `${progress}%`;
-}
+yesBtn.addEventListener('click', () => {
+    end = mid;
+    if (start === end) {
+        gameOver(`<h2>Your birthday is on ${dateFromDayOfYear(start)}!</h2>I guessed it in ${guessCount} tries.`);
+    } else if (guessCount >= maxGuesses) {
+        gameOver(`<h2>I couldn't guess your exact birthday</h2>But I know it's between ${dateFromDayOfYear(start)} and ${dateFromDayOfYear(end)}. Let's try again!`);
+    } else {
+        updateQuestion();
+    }
+});
 
-function fadeIn(element) {
-    element.classList.add('active');
-}
+noBtn.addEventListener('click', () => {
+    start = mid + 1;
+    if (start > end) {
+        gameOver(`<h2>Oops! Something went wrong.</h2>Let's try again!`);
+    } else if (guessCount >= maxGuesses) {
+        gameOver(`<h2>I couldn't guess your exact birthday</h2>But I know it's between ${dateFromDayOfYear(start)} and ${dateFromDayOfYear(end)}. Let's try again!`);
+    } else {
+        updateQuestion();
+    }
+});
 
-function fadeOut(element, callback) {
-    element.classList.remove('active');
-    setTimeout(callback, 500);
-}
-
-function triggerConfetti() {
-    confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-}
-
-yesBtn.addEventListener('click', () => processAnswer(true));
-noBtn.addEventListener('click', () => processAnswer(false));
 restartBtn.addEventListener('click', restart);
 
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'y' || event.key === 'Y') {
+    if (event.key.toLowerCase() === 'y') {
         yesBtn.click();
-    } else if (event.key === 'n' || event.key === 'N') {
+    } else if (event.key.toLowerCase() === 'n') {
         noBtn.click();
     }
 });
 
-showQuestion();
+totalQuestionsSpan.textContent = maxGuesses;
+updateQuestion();
