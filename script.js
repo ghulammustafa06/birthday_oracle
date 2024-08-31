@@ -61,28 +61,24 @@ function restart() {
     updateQuestion();
 }
 
-yesBtn.addEventListener('click', () => {
-    end = mid;
+function handleAnswer(isYes) {
+    if (isYes) {
+        end = mid;
+    } else {
+        start = mid + 1;
+    }
+
     if (start === end) {
         gameOver(`<h2>Your birthday is on ${dateFromDayOfYear(start)}!</h2>I guessed it in ${guessCount} tries.`);
-    } else if (guessCount >= maxGuesses) {
+    } else if (start > end || guessCount >= maxGuesses) {
         gameOver(`<h2>I couldn't guess your exact birthday</h2>But I know it's between ${dateFromDayOfYear(start)} and ${dateFromDayOfYear(end)}. Let's try again!`);
     } else {
         updateQuestion();
     }
-});
+}
 
-noBtn.addEventListener('click', () => {
-    start = mid + 1;
-    if (start > end) {
-        gameOver(`<h2>Oops! Something went wrong.</h2>Let's try again!`);
-    } else if (guessCount >= maxGuesses) {
-        gameOver(`<h2>I couldn't guess your exact birthday</h2>But I know it's between ${dateFromDayOfYear(start)} and ${dateFromDayOfYear(end)}. Let's try again!`);
-    } else {
-        updateQuestion();
-    }
-});
-
+yesBtn.addEventListener('click', () => handleAnswer(true));
+noBtn.addEventListener('click', () => handleAnswer(false));
 restartBtn.addEventListener('click', restart);
 
 document.addEventListener('keydown', (event) => {
